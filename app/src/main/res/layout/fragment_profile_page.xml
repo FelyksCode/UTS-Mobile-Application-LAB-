@@ -21,13 +21,13 @@
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Name" />
+        android:hint="Nama" />
 
     <EditText
         android:id="@+id/student_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Student ID" />
+        android:hint="NIM" />
 
     <Button
         android:id="@+id/save_button"

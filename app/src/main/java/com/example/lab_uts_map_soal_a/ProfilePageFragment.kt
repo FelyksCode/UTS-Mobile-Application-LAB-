@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,8 +28,13 @@ class ProfilePageFragment : Fragment() {
     private lateinit var db: FirebaseFirestore
     private lateinit var storage: FirebaseStorage
     private lateinit var profileImageView: ImageView
+    private lateinit var saveButton: Button
+    private lateinit var nameEditText: EditText
+    private lateinit var studentIdEditText: EditText
     private var selectedImageUri: Uri? = null
     private var currentImageUrl: String? = null
+    private var currentName: String? = null
+    private var currentStudentId: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,14 +47,17 @@ class ProfilePageFragment : Fragment() {
         storage = FirebaseStorage.getInstance()
 
         profileImageView = view.findViewById(R.id.profile_image)
+        saveButton = view.findViewById(R.id.save_button)
+        nameEditText = view.findViewById(R.id.name)
+        studentIdEditText = view.findViewById(R.id.student_id)
 
         view.findViewById<Button>(R.id.select_image_button).setOnClickListener {
             selectImage()
         }
 
-        view.findViewById<Button>(R.id.save_button).setOnClickListener {
-            val name = view.findViewById<EditText>(R.id.name).text.toString()
-            val studentId = view.findViewById<EditText>(R.id.student_id).text.toString()
+        saveButton.setOnClickListener {
+            val name = nameEditText.text.toString()
+            val studentId = studentIdEditText.text.toString()
             saveUserData(name, studentId)
         }
 
@@ -62,7 +72,19 @@ class ProfilePageFragment : Fragment() {
 
         loadUserData()
 
+        // Add TextWatchers to EditText fields
+        nameEditText.addTextChangedListener(textWatcher)
+        studentIdEditText.addTextChangedListener(textWatcher)
+
         return view
+    }
+
+    private val textWatcher = object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            checkForChanges()
+        }
+        override fun afterTextChanged(s: Editable?) {}
     }
 
     private fun selectImage() {
@@ -76,7 +98,15 @@ class ProfilePageFragment : Fragment() {
         if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
             selectedImageUri = data.data
             profileImageView.setImageURI(selectedImageUri)
+            checkForChanges()
         }
+    }
+
+    private fun checkForChanges() {
+        val name = nameEditText.text.toString()
+        val studentId = studentIdEditText.text.toString()
+        val hasChanges = name != currentName || studentId != currentStudentId || selectedImageUri != null
+        saveButton.visibility = if (hasChanges) View.VISIBLE else View.GONE
     }
 
     private fun saveUserData(name: String, studentId: String) {
@@ -116,7 +146,10 @@ class ProfilePageFragment : Fragment() {
             .set(userData)
             .addOnSuccessListener {
                 Toast.makeText(context, "Data saved successfully", Toast.LENGTH_SHORT).show()
+                currentName = name
+                currentStudentId = studentId
                 currentImageUrl = imageUrl
+                saveButton.visibility = View.GONE // Hide the save button
             }
             .addOnFailureListener { e ->
                 Toast.makeText(context, "Error saving data: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -129,12 +162,12 @@ class ProfilePageFragment : Fragment() {
             db.collection("users").document(user.uid).get()
                 .addOnSuccessListener { document ->
                     if (document != null) {
-                        val name = document.getString("name")
-                        val studentId = document.getString("studentId")
+                        currentName = document.getString("name")
+                        currentStudentId = document.getString("studentId")
                         currentImageUrl = document.getString("imageUrl")
 
-                        view?.findViewById<EditText>(R.id.name)?.setText(name)
-                        view?.findViewById<EditText>(R.id.student_id)?.setText(studentId)
+                        nameEditText.setText(currentName)
+                        studentIdEditText.setText(currentStudentId)
 
                         if (!currentImageUrl.isNullOrEmpty()) {
                             Glide.with(this).load(currentImageUrl).into(profileImageView)

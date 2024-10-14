@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(), NavigationManager.OnNavigationItemSele
             // Load HomePageFragment by default
             if (savedInstanceState == null) {
                 supportFragmentManager.commit {
-                    replace(R.id.main, HomePageFragment())
+                    replace(R.id.main, HomeFragment())
                 }
             }
         }
@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity(), NavigationManager.OnNavigationItemSele
             }
             R.id.page_2 -> {
                 supportFragmentManager.commit {
-                    replace(R.id.main, HomePageFragment())
+                    replace(R.id.main, HomeFragment())
                 }
                 true
             }

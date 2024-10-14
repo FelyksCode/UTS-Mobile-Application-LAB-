@@ -68,7 +68,7 @@ class LoginFragment : Fragment() {
                     bottomNavigationView.visibility = View.VISIBLE
                     bottomNavigationView.selectedItemId = R.id.page_2 // Set home page as active
                     requireActivity().supportFragmentManager.commit {
-                        replace(R.id.main, HomePageFragment())
+                        replace(R.id.main, HomeFragment())
                     }
                 } else {
                     // If sign in fails, display a message to the user.
@@ -106,7 +106,7 @@ class LoginFragment : Fragment() {
                     bottomNavigationView.visibility = View.VISIBLE
                     bottomNavigationView.selectedItemId = R.id.page_2 // Set home page as active
                     requireActivity().supportFragmentManager.commit {
-                        replace(R.id.main, HomePageFragment())
+                        replace(R.id.main, HomeFragment())
                     }
                 } else {
                     Toast.makeText(context, "Authentication Failed.", Toast.LENGTH_SHORT).show()

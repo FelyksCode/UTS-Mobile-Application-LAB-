@@ -42,7 +42,7 @@ class SignUpFragment : Fragment() {
                     bottomNavigationView.visibility = View.VISIBLE
                     bottomNavigationView.selectedItemId = R.id.page_2 // Set home page as active
                     requireActivity().supportFragmentManager.commit {
-                        replace(R.id.main, HomePageFragment())
+                        replace(R.id.main, HomeFragment())
                     }
                 } else {
                     // If sign up fails, display a message to the user.

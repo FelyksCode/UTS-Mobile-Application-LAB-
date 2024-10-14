@@ -12,6 +12,33 @@
         android:textSize="24sp"
         android:textStyle="bold" />
 
-    <!-- Add your UI elements here -->
+    <ImageView
+        android:id="@+id/story_image"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="16dp"
+        android:background="@android:color/darker_gray"
+        android:contentDescription="Story Image" />
+
+    <Button
+        android:id="@+id/select_image_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Select Image" />
+
+    <EditText
+        android:id="@+id/story_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="Write your story here" />
+
+    <Button
+        android:id="@+id/submit_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Submit" />
 
 </LinearLayout>
