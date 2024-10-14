@@ -1,5 +1,7 @@
 package com.example.lab_uts_map_soal_a
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,9 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-
 class StoriesAdapter(
-    private val storiesList: List<Story>,
+    private val storiesList: MutableList<Story>,
     private val onBookmarkRemoved: () -> Unit
 ) : RecyclerView.Adapter<StoriesAdapter.StoryViewHolder>() {
 
@@ -27,6 +28,11 @@ class StoriesAdapter(
     }
 
     override fun getItemCount(): Int = storiesList.size
+
+    fun removeStory(position: Int) {
+        storiesList.removeAt(position)
+        notifyItemRemoved(position)
+    }
 
     inner class StoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val storyImageView: ImageView = itemView.findViewById(R.id.story_image)
@@ -43,14 +49,46 @@ class StoriesAdapter(
                 Glide.with(itemView.context).load(story.imageUrl).into(storyImageView)
             }
             storyTextView.text = story.storyText
-            likesCountTextView.text = "Likes: ${story.likesCount}"
+            likesCountTextView.text = "${story.likesCount}"
+
+            val user = FirebaseAuth.getInstance().currentUser
+            if (user != null) {
+                val storyRef = FirebaseFirestore.getInstance().collection("stories").document(story.id)
+                storyRef.get()
+                    .addOnSuccessListener { document ->
+                        if (document.exists()) {
+                            val likedBy = document.get("likedBy") as? List<String> ?: emptyList()
+                            if (likedBy.contains(user.uid)) {
+                                likeButton.isSelected = true
+                                likeButton.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF4D4D"))
+                            } else {
+                                likeButton.isSelected = false
+                                likeButton.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
+                            }
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(itemView.context, "Error retrieving story: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+
+                val bookmarksRef = FirebaseFirestore.getInstance().collection("users").document(user.uid)
+                    .collection("bookmarks").document(story.id)
+                bookmarksRef.get()
+                    .addOnSuccessListener { document ->
+                        if (document.exists()) {
+                            bookmarkButton.setBackgroundResource(R.drawable.bookmark_full_ic)
+                        } else {
+                            bookmarkButton.setBackgroundResource(R.drawable.bookmark_outline_ic)
+                        }
+                    }
+            }
 
             likeButton.setOnClickListener {
                 likeStory(story)
             }
 
             bookmarkButton.setOnClickListener {
-                bookmarkStory(story)
+                bookmarkStory(story, adapterPosition)
             }
         }
 
@@ -63,14 +101,36 @@ class StoriesAdapter(
                     .addOnSuccessListener { document ->
                         if (document.exists()) {
                             val likedBy = document.get("likedBy") as? List<String> ?: emptyList()
+                            val currentLikes = document.getLong("likesCount") ?: 0
                             if (likedBy.contains(user.uid)) {
-                                Toast.makeText(
-                                    itemView.context,
-                                    "You have already liked this story",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                // Unlike the story
+                                val newLikes = currentLikes - 1
+                                storyRef.update(
+                                    mapOf(
+                                        "likesCount" to newLikes,
+                                        "likedBy" to likedBy - user.uid
+                                    )
+                                )
+                                    .addOnSuccessListener {
+                                        likesCountTextView.text = "$newLikes"
+                                        likeButton.isSelected = false
+                                        likeButton.backgroundTintList =
+                                            ColorStateList.valueOf(Color.BLACK)
+                                        Toast.makeText(
+                                            itemView.context,
+                                            "Unliked",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Toast.makeText(
+                                            itemView.context,
+                                            "Error unliking story: ${e.message}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
                             } else {
-                                val currentLikes = document.getLong("likesCount") ?: 0
+                                // Like the story
                                 val newLikes = currentLikes + 1
                                 storyRef.update(
                                     mapOf(
@@ -79,7 +139,10 @@ class StoriesAdapter(
                                     )
                                 )
                                     .addOnSuccessListener {
-                                        likesCountTextView.text = "Likes: $newLikes"
+                                        likesCountTextView.text = "$newLikes"
+                                        likeButton.isSelected = true
+                                        likeButton.backgroundTintList =
+                                            ColorStateList.valueOf(Color.parseColor("#FF4D4D"))
                                         Toast.makeText(
                                             itemView.context,
                                             "Liked",
@@ -106,37 +169,28 @@ class StoriesAdapter(
             }
         }
 
-        private fun bookmarkStory(story: Story) {
+        private fun bookmarkStory(story: Story, position: Int) {
             val user = FirebaseAuth.getInstance().currentUser
             if (user != null) {
-                val bookmarksRef =
-                    FirebaseFirestore.getInstance().collection("users").document(user.uid)
-                        .collection("bookmarks").document(story.id)
+                val bookmarksRef = FirebaseFirestore.getInstance().collection("users").document(user.uid)
+                    .collection("bookmarks").document(story.id)
                 bookmarksRef.get()
                     .addOnSuccessListener { document ->
                         if (document.exists()) {
+                            // Remove bookmark
                             bookmarksRef.delete()
                                 .addOnSuccessListener {
-                                    Toast.makeText(
-                                        itemView.context,
-                                        "Bookmark removed",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    val position = storiesList.indexOf(story)
-                                    if (position != -1) {
-                                        (storiesList as MutableList).removeAt(position)
-                                        notifyItemRemoved(position)
-                                    }
-                                    onBookmarkRemoved() // Call the callback function to refresh the profile page
+                                    Toast.makeText(itemView.context, "Bookmark removed", Toast.LENGTH_SHORT).show()
+                                    bookmarkButton.setBackgroundResource(R.drawable.bookmark_outline_ic)
+                                    removeStory(position)
+                                    onBookmarkRemoved()
                                 }
                         } else {
+                            // Add bookmark
                             bookmarksRef.set(mapOf("bookmarked" to true))
                                 .addOnSuccessListener {
-                                    Toast.makeText(
-                                        itemView.context,
-                                        "Bookmarked",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast.makeText(itemView.context, "Bookmarked", Toast.LENGTH_SHORT).show()
+                                    bookmarkButton.setBackgroundResource(R.drawable.bookmark_full_ic)
                                 }
                         }
                     }

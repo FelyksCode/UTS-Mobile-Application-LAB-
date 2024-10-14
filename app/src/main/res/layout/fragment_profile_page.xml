@@ -6,6 +6,19 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <Button
+        android:id="@+id/logout_button"
+        android:layout_width="102dp"
+        android:layout_height="36dp"
+        android:layout_gravity="end"
+        android:layout_marginBottom="10dp"
+        android:backgroundTint="#FF0000"
+        android:drawableEnd="@drawable/logout_ic"
+        android:drawablePadding="0dp"
+        android:padding="4dp"
+        android:text="Log out"
+        app:backgroundTint="#FF0000" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="149dp"
@@ -36,6 +49,7 @@
                 android:layout_marginTop="47dp"
                 android:layout_marginBottom="47dp"
                 android:text="Select Image"
+                app:backgroundTint="@color/blue"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/profile_image"
@@ -49,31 +63,28 @@
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/blue"
+
         android:hint="Nama" />
 
     <EditText
         android:id="@+id/student_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/blue"
+
         android:hint="NIM" />
 
     <Button
         android:id="@+id/save_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:backgroundTint="@color/blue"
         android:text="Save" />
-
-    <Button
-        android:id="@+id/logout_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="#FF0000"
-        android:textAlignment="center"
-        app:icon="@drawable/logout_ic" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/bookmarks_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="304dp"
         android:layout_marginTop="16dp" />
 </LinearLayout>

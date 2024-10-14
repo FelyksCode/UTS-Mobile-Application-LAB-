@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
 class HomeFragment : Fragment() {
 
@@ -40,7 +41,9 @@ class HomeFragment : Fragment() {
     }
 
     private fun loadStories() {
-        db.collection("stories").get()
+        db.collection("stories")
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .get()
             .addOnSuccessListener { documents ->
                 storiesList.clear()
                 val tempStoriesList = mutableListOf<Story>()

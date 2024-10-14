@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Other styles -->
+
+    <style name="BottomNavigationViewTextAppearance" parent="TextAppearance.AppCompat.Medium">
+        <item name="fontFamily">@font/poppins_regular</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+</resources>

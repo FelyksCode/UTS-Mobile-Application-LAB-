@@ -1,6 +1,7 @@
 package com.example.lab_uts_map_soal_a
 
 import android.app.Activity
+import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -25,6 +26,7 @@ class AddStoryFragment : Fragment() {
     private lateinit var storyImageView: ImageView
     private lateinit var storyEditText: EditText
     private var selectedImageUri: Uri? = null
+    private lateinit var progressDialog: ProgressDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,6 +46,7 @@ class AddStoryFragment : Fragment() {
         }
 
         view.findViewById<Button>(R.id.submit_button).setOnClickListener {
+            showLoading()
             submitStory()
         }
 
@@ -64,6 +67,19 @@ class AddStoryFragment : Fragment() {
         }
     }
 
+    private fun showLoading() {
+        progressDialog = ProgressDialog(context)
+        progressDialog.setMessage("Posting your story...")
+        progressDialog.setCancelable(false)
+        progressDialog.show()
+    }
+
+    private fun hideLoading() {
+        if (::progressDialog.isInitialized && progressDialog.isShowing) {
+            progressDialog.dismiss()
+        }
+    }
+
     private fun submitStory() {
         val user = auth.currentUser
         val storyText = storyEditText.text.toString()
@@ -78,12 +94,14 @@ class AddStoryFragment : Fragment() {
                         }
                     }
                     .addOnFailureListener { e ->
+                        hideLoading()
                         Toast.makeText(context, "Error uploading image: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
             } else {
                 saveToFirestore(user.uid, storyText, null)
             }
         } else {
+            hideLoading()
             Toast.makeText(context, "Please write a story", Toast.LENGTH_SHORT).show()
         }
     }
@@ -97,10 +115,12 @@ class AddStoryFragment : Fragment() {
         )
         db.collection("stories").add(storyData)
             .addOnSuccessListener {
+                hideLoading()
                 Toast.makeText(context, "Story posted successfully", Toast.LENGTH_SHORT).show()
                 // Optionally, clear the form or navigate away
             }
             .addOnFailureListener { e ->
+                hideLoading()
                 Toast.makeText(context, "Error posting story: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }

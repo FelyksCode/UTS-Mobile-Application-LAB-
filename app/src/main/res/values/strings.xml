@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">LAB_UTS_MAP_SOAL_A</string>
     <string name="Page1">Add Story</string>
-    <string name="Page2">Home Page</string>
-    <string name="Page3">Profile Page</string>
+    <string name="Page2">Home</string>
+    <string name="Page3">Profile</string>
     <string name="default_web_client_id">916705243688-0jpev318lmi8dnkn6sb7up216ee904t8.apps.googleusercontent.com</string>
 </resources>

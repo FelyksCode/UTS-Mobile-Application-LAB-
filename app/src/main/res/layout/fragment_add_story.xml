@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -8,9 +9,12 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add Story Page"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:text="Share Your UMN Story"
+        android:layout_gravity="center"
+        android:textSize="32sp"
+        android:fontFamily="@font/proteststrike_regular"
+        android:textColor="@color/blue"
+         />
 
     <ImageView
         android:id="@+id/story_image"
@@ -18,27 +22,36 @@
         android:layout_height="200dp"
         android:layout_marginTop="16dp"
         android:background="@android:color/darker_gray"
-        android:contentDescription="Story Image" />
+        android:contentDescription="Story Image"
+        android:foregroundTint="#00B42525"
+        android:src="@drawable/img_ic"
+        android:tint="#00B42525" />
 
     <Button
         android:id="@+id/select_image_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginTop="8dp"
-        android:text="Select Image" />
+        app:backgroundTint="@color/blue"
+        android:text="Select Image"
+        app:icon="@drawable/upload_icon" />
 
     <EditText
         android:id="@+id/story_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:backgroundTint="@color/blue"
         android:hint="Write your story here" />
 
     <Button
         android:id="@+id/submit_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginTop="16dp"
-        android:text="Submit" />
+        app:backgroundTint="@color/blue"
+        android:text="Post" />
 
 </LinearLayout>

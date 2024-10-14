@@ -2,8 +2,8 @@
     <item
         android:id="@+id/page_1"
         android:enabled="true"
-        android:title="@string/Page1"
-        android:icon="@drawable/add_box"/>
+        android:icon="@drawable/add_box"
+        android:title="@string/Page1" />
     <item
         android:id="@+id/page_2"
         android:enabled="true"
@@ -13,5 +13,5 @@
         android:id="@+id/page_3"
         android:enabled="true"
         android:icon="@drawable/profile_ic"
-        android:title="@string/Page3"/>
+        android:title="@string/Page3" />
 </menu>
