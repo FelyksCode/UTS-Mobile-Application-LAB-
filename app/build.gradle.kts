@@ -54,4 +54,7 @@ dependencies {
 
     implementation("com.google.android.material:material:1.4.0")
     implementation("androidx.fragment:fragment-ktx:1.3.6")
+
+    implementation("com.google.firebase:firebase-auth:21.0.1")
+    implementation("com.google.android.gms:play-services-auth:19.2.0")
 }
