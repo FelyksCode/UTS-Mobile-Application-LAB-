@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "916705243688",
+    "project_id": "map-lab-uts-soal-a-felix",
+    "storage_bucket": "map-lab-uts-soal-a-felix.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:916705243688:android:653793ec1cffdfa885fb1d",
+        "android_client_info": {
+          "package_name": "com.example.lab_uts_map_soal_a"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "916705243688-5lprqp3ck0ni6feoi406q19pjoo669c7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.lab_uts_map_soal_a",
+            "certificate_hash": "138727d61a7d6b52df99631871b844196d02d221"
+          }
+        },
+        {
+          "client_id": "916705243688-0jpev318lmi8dnkn6sb7up216ee904t8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB99w0mGA5s-704NG9hCCjexhd3I2qUocM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "916705243688-0jpev318lmi8dnkn6sb7up216ee904t8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
