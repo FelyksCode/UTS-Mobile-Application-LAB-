@@ -4,14 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -72,69 +68,6 @@ class HomeFragment : Fragment() {
         Tasks.whenAllSuccess<Void>(tasks).addOnSuccessListener {
             storiesList.addAll(stories)
             storiesAdapter.notifyDataSetChanged()
-        }
-    }
-
-    inner class StoriesAdapter(private val stories: List<Story>) :
-        RecyclerView.Adapter<StoriesAdapter.StoryViewHolder>() {
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StoryViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_story, parent, false)
-            return StoryViewHolder(view)
-        }
-
-        override fun onBindViewHolder(holder: StoryViewHolder, position: Int) {
-            val story = stories[position]
-            holder.bind(story)
-        }
-
-        override fun getItemCount(): Int = stories.size
-
-        inner class StoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            private val storyImageView: ImageView = itemView.findViewById(R.id.story_image)
-            private val storyTextView: TextView = itemView.findViewById(R.id.story_text)
-            private val likeButton: Button = itemView.findViewById(R.id.like_button)
-            private val likesCountTextView: TextView = itemView.findViewById(R.id.likes_count)
-
-            fun bind(story: Story) {
-                if (story.imageUrl.isNullOrEmpty()) {
-                    storyImageView.visibility = View.GONE
-                } else {
-                    storyImageView.visibility = View.VISIBLE
-                    Glide.with(itemView.context).load(story.imageUrl).into(storyImageView)
-                }
-                storyTextView.text = story.storyText
-                likesCountTextView.text = "Likes: ${story.likesCount}"
-
-                likeButton.setOnClickListener {
-                    likeStory(story)
-                }
-            }
-        }
-    }
-
-    private fun likeStory(story: Story) {
-        val user = auth.currentUser
-        if (user != null) {
-            val likesRef = db.collection("stories").document(story.id).collection("likes").document(user.uid)
-            likesRef.get()
-                .addOnSuccessListener { document ->
-                    if (document.exists()) {
-                        likesRef.delete()
-                            .addOnSuccessListener {
-                                story.likesCount -= 1
-                                storiesAdapter.notifyDataSetChanged()
-                                Toast.makeText(context, "Unliked", Toast.LENGTH_SHORT).show()
-                            }
-                    } else {
-                        likesRef.set(mapOf("liked" to true))
-                            .addOnSuccessListener {
-                                story.likesCount += 1
-                                storiesAdapter.notifyDataSetChanged()
-                                Toast.makeText(context, "Liked", Toast.LENGTH_SHORT).show()
-                            }
-                    }
-                }
         }
     }
 }
