@@ -31,7 +31,7 @@ class HomeFragment : Fragment() {
 
         storiesRecyclerView = view.findViewById(R.id.stories_recycler_view)
         storiesRecyclerView.layoutManager = LinearLayoutManager(context)
-        storiesAdapter = StoriesAdapter(storiesList)
+        storiesAdapter = StoriesAdapter(storiesList, onBookmarkRemoved = {})
         storiesRecyclerView.adapter = storiesAdapter
 
         loadStories()
