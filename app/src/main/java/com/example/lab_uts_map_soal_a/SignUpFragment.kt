@@ -15,6 +15,9 @@ import com.google.firebase.auth.FirebaseAuth
 class SignUpFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var emailEditText: EditText
+    private lateinit var passwordEditText: EditText
+    private lateinit var confirmPasswordEditText: EditText
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,21 +26,53 @@ class SignUpFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_sign_up, container, false)
 
         auth = FirebaseAuth.getInstance()
+        emailEditText = view.findViewById(R.id.email)
+        passwordEditText = view.findViewById(R.id.password)
+        confirmPasswordEditText = view.findViewById(R.id.confirm_password)
 
         view.findViewById<Button>(R.id.sign_up_button).setOnClickListener {
-            val email = view.findViewById<EditText>(R.id.email).text.toString()
-            val password = view.findViewById<EditText>(R.id.password).text.toString()
-            signUpWithEmail(email, password)
+            if (validateForm()) {
+                signUpUser()
+            }
         }
 
         return view
     }
 
-    private fun signUpWithEmail(email: String, password: String) {
+    private fun validateForm(): Boolean {
+        val email = emailEditText.text.toString().trim()
+        val password = passwordEditText.text.toString().trim()
+        val confirmPassword = confirmPasswordEditText.text.toString().trim()
+
+        return when {
+            email.isEmpty() -> {
+                emailEditText.error = "Email is required"
+                false
+            }
+            password.isEmpty() -> {
+                passwordEditText.error = "Password is required"
+                false
+            }
+            confirmPassword.isEmpty() -> {
+                confirmPasswordEditText.error = "Confirm Password is required"
+                false
+            }
+            password != confirmPassword -> {
+                confirmPasswordEditText.error = "Passwords do not match"
+                false
+            }
+            else -> true
+        }
+    }
+
+    private fun signUpUser() {
+        val email = emailEditText.text.toString().trim()
+        val password = passwordEditText.text.toString().trim()
+
         auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener(requireActivity()) { task ->
+            .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    // Sign up success, navigate to HomePageFragment
+                    Toast.makeText(context, "Sign up successful", Toast.LENGTH_SHORT).show()
                     val bottomNavigationView = requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation)
                     bottomNavigationView.visibility = View.VISIBLE
                     bottomNavigationView.selectedItemId = R.id.page_2 // Set home page as active
@@ -45,8 +80,7 @@ class SignUpFragment : Fragment() {
                         replace(R.id.main, HomeFragment())
                     }
                 } else {
-                    // If sign up fails, display a message to the user.
-                    Toast.makeText(context, "Sign Up Failed.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Sign up failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
     }

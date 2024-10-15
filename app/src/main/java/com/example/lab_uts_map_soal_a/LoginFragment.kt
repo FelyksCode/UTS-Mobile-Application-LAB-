@@ -53,6 +53,7 @@ class LoginFragment : Fragment() {
         view.findViewById<Button>(R.id.sign_up_button).setOnClickListener {
             requireActivity().supportFragmentManager.commit {
                 replace(R.id.main, SignUpFragment())
+                addToBackStack(null)
             }
         }
 
@@ -60,6 +61,16 @@ class LoginFragment : Fragment() {
     }
 
     private fun signInWithEmail(email: String, password: String) {
+        if (email.isEmpty()) {
+            Toast.makeText(context, "Email is required.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (password.isEmpty()) {
+            Toast.makeText(context, "Password is required.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
@@ -72,7 +83,7 @@ class LoginFragment : Fragment() {
                     }
                 } else {
                     // If sign in fails, display a message to the user.
-                    Toast.makeText(context, "Authentication Failed.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Login Failed.", Toast.LENGTH_SHORT).show()
                 }
             }
     }
