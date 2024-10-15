@@ -55,22 +55,28 @@ class HomeFragment : Fragment() {
                 loadLikesForStories(tempStoriesList)
             }
             .addOnFailureListener { e ->
-                Toast.makeText(context, "Error loading stories: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Error loading stories: ${e.message}", Toast.LENGTH_SHORT)
+                    .show()
             }
     }
 
     private fun loadLikesForStories(stories: List<Story>) {
         val tasks = stories.map { story ->
             db.collection("stories").document(story.id).collection("likes").get()
-                .addOnSuccessListener { likes ->
-                    story.likesCount = likes.size()
+                .continueWith { task ->
+                    if (task.isSuccessful) {
+                        story.likesCount = task.result?.size() ?: 0
+                    }
                 }
         }
 
         // Wait for all tasks to complete
-        Tasks.whenAllSuccess<Void>(tasks).addOnSuccessListener {
+        Tasks.whenAll(tasks).addOnSuccessListener {
+            storiesList.clear()
             storiesList.addAll(stories)
             storiesAdapter.notifyDataSetChanged()
+        }.addOnFailureListener { e ->
+            Toast.makeText(context, "Error loading likes: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 }

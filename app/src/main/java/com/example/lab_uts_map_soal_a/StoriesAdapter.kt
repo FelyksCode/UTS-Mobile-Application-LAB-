@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+
 class StoriesAdapter(
     private val storiesList: MutableList<Story>,
     private val onBookmarkRemoved: () -> Unit
@@ -58,6 +59,8 @@ class StoriesAdapter(
                     .addOnSuccessListener { document ->
                         if (document.exists()) {
                             val likedBy = document.get("likedBy") as? List<String> ?: emptyList()
+                            story.likesCount = document.getLong("likesCount")?.toInt() ?: 0
+                            likesCountTextView.text = "${story.likesCount}"
                             if (likedBy.contains(user.uid)) {
                                 likeButton.isSelected = true
                                 likeButton.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF4D4D"))
